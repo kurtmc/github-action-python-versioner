@@ -1,7 +1,7 @@
 # github-action-python-versioner
 
-This action prints automatically updates the version number in `pyproject.toml`
-and creates appropriate tags.
+This action automatically updates the version number in `pyproject.toml` and
+creates appropriate tags.
 
 ## Example usage
 
