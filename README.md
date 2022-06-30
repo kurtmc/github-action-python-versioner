@@ -1,21 +1,28 @@
 # github-action-python-versioner
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
-
-## Inputs
-
-## `who-to-greet`
-
-**Required** The name of the person to greet. Default `"World"`.
-
-## Outputs
-
-## `time`
-
-The time we greeted you.
+This action prints automatically updates the version number in `pyproject.toml`
+and creates appropriate tags.
 
 ## Example usage
 
-uses: actions/hello-world-docker-action@v1
-with:
-  who-to-greet: 'Mona the Octocat'
+```
+name: Updates version and tags
+on:
+  push:
+    branches:
+      - master
+permissions:
+  contents: write
+jobs:
+  update_version_and_tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Update version
+      uses: kurtmc/github-action-python-versioner@v1
+
+```
