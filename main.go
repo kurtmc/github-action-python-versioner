@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/blang/semver/v4"
 	"github.com/pelletier/go-toml"
@@ -10,8 +11,7 @@ import (
 )
 
 func getGitTagsForHead() ([]string, error) {
-	cmd := exec.Command("git", "tag", "--points-at", "HEAD")
-	stdout, err := cmd.Output()
+	stdout, err := runCmd("git", "tag", "--points-at", "HEAD")
 	if err != nil {
 		return nil, err
 	}
@@ -19,14 +19,12 @@ func getGitTagsForHead() ([]string, error) {
 }
 
 func getGitTagVersion() (string, error) {
-	cmd := exec.Command("git", "fetch", "--tags")
-	_, err := cmd.Output()
+	stdout, err := runCmd("git", "fetch", "--tags")
 	if err != nil {
 		return "", fmt.Errorf("could not fetch tags: %v", err)
 	}
 
-	cmd = exec.Command("git", "tag", "-l")
-	stdout, err := cmd.Output()
+	stdout, err = runCmd("git", "tag", "-l")
 	if err != nil {
 		return "", err
 	}
@@ -60,31 +58,42 @@ func getSetupCfgVersion() (string, error) {
 }
 
 func configureGit() error {
-	cmd := exec.Command("git", "config", "user.name")
-	stdout, err := cmd.Output()
+	stdout, err := runCmd("git", "config", "user.name")
 	if err != nil {
 		return err
 	}
 	if len(stdout) == 0 {
-		cmd := exec.Command("git", "config", "--global", "user.name", "github-actions[bot]")
-		_, err := cmd.Output()
+		_, err := runCmd("git", "config", "--global", "user.name", "github-actions[bot]")
 		if err != nil {
 			return err
 		}
 	}
-	cmd = exec.Command("git", "config", "user.email")
-	stdout, err = cmd.Output()
+	stdout, err = runCmd("git", "config", "user.email")
 	if err != nil {
 		return err
 	}
 	if len(stdout) == 0 {
-		cmd := exec.Command("git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com")
-		_, err := cmd.Output()
+		_, err := runCmd("git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com")
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func runCmd(name string, arg ...string) (string, error) {
+	cmd := exec.Command(name, arg...)
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
+	stdout := outb.String()
+	stderr := errb.String()
+	if err != nil {
+		fmt.Printf("failed to run command, got stdout:\n%s\nstderr:\n%s\n", stdout, stderr)
+		return "", fmt.Errorf("failed to run command: %v", err)
+	}
+	return stdout, nil
 }
 
 func main() {
@@ -139,26 +148,22 @@ func updateTagAndSetupCfg(newVersion string) error {
 		if err != nil {
 			return err
 		}
-		cmd := exec.Command("git", "add", "pyproject.toml")
-		_, err = cmd.Output()
+		_, err = runCmd("git", "add", "pyproject.toml")
 		if err != nil {
 			return err
 		}
-		cmd = exec.Command("git", "commit", "-m", fmt.Sprintf("update version to %s in pyproject.toml", newVersion))
-		_, err = cmd.Output()
+		_, err = runCmd("git", "commit", "-m", fmt.Sprintf("update version to %s in pyproject.toml", newVersion))
 		if err != nil {
 			return err
 		}
 	}
-	cmd := exec.Command("git", "tag", newVersion)
-	_, err = cmd.Output()
+	_, err = runCmd("git", "tag", newVersion)
 	if err != nil {
 		return err
 	}
 	githubRef := os.Getenv("GITHUB_REF")
 	branch := strings.TrimPrefix(githubRef, "refs/heads/")
-	cmd = exec.Command("git", "push", "--tags", "origin", branch)
-	_, err = cmd.Output()
+	_, err = runCmd("git", "push", "--tags", "origin", branch)
 	if err != nil {
 		return err
 	}
