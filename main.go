@@ -58,20 +58,14 @@ func getSetupCfgVersion() (string, error) {
 }
 
 func configureGit() error {
-	stdout, err := runCmd("git", "config", "user.name")
-	if err != nil {
-		return err
-	}
+	stdout, _ := runCmd("git", "config", "user.name")
 	if len(stdout) == 0 {
 		_, err := runCmd("git", "config", "--global", "user.name", "github-actions[bot]")
 		if err != nil {
 			return err
 		}
 	}
-	stdout, err = runCmd("git", "config", "user.email")
-	if err != nil {
-		return err
-	}
+	stdout, _ = runCmd("git", "config", "user.email")
 	if len(stdout) == 0 {
 		_, err := runCmd("git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com")
 		if err != nil {
