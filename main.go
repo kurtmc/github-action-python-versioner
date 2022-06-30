@@ -162,12 +162,14 @@ func updateTagAndSetupCfg(newVersion string) error {
 			return err
 		}
 	}
+	fmt.Printf("git tag %s\n", newVersion)
 	_, err = runCmd("git", "tag", newVersion)
 	if err != nil {
 		return err
 	}
 	githubRef := os.Getenv("GITHUB_REF")
 	branch := strings.TrimPrefix(githubRef, "refs/heads/")
+	fmt.Printf("git push --tags origin %s\n", branch)
 	_, err = runCmd("git", "push", "--tags", "origin", branch)
 	if err != nil {
 		return err
