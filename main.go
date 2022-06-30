@@ -131,7 +131,10 @@ func main() {
 		newVersion = ver.String()
 	}
 	fmt.Printf("new version to be published is %s", newVersion)
-	updateTagAndSetupCfg(newVersion)
+	err = updateTagAndSetupCfg(newVersion)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func updateTagAndSetupCfg(newVersion string) error {
