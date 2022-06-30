@@ -58,6 +58,10 @@ func getSetupCfgVersion() (string, error) {
 }
 
 func configureGit() error {
+	_, err := runCmd("git", "config", "--global", "--add", "safe.directory", "/github/workspace")
+	if err != nil {
+		return err
+	}
 	stdout, err := runCmd("git", "config", "user.name")
 	if err != nil {
 		return err
