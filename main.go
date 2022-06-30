@@ -19,12 +19,12 @@ func getGitTagsForHead() ([]string, error) {
 }
 
 func getGitTagVersion() (string, error) {
-	stdout, err := runCmd("git", "fetch", "--tags")
+	_, err := runCmd("git", "fetch", "--tags")
 	if err != nil {
 		return "", fmt.Errorf("could not fetch tags: %v", err)
 	}
 
-	stdout, err = runCmd("git", "tag", "-l")
+	stdout, err := runCmd("git", "tag", "-l")
 	if err != nil {
 		return "", err
 	}
