@@ -140,12 +140,12 @@ func main() {
 func updateTagAndSetupCfg(newVersion string) error {
 	err := configureGit()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to configure git: %v", err)
 	}
 
 	config, err := toml.LoadFile("pyproject.toml")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load pyproject.toml: %v", err)
 	}
 	project := config.Get("project")
 	version := project.(*toml.Tree).Get("version").(string)
