@@ -22,7 +22,7 @@ func getGitTagVersion() (string, error) {
 	cmd := exec.Command("git", "fetch", "--tags")
 	_, err := cmd.Output()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("could not fetch tags: %v", err)
 	}
 
 	cmd = exec.Command("git", "tag", "-l")
