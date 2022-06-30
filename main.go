@@ -154,28 +154,28 @@ func updateTagAndSetupCfg(newVersion string) error {
 		project.(*toml.Tree).Set("version", newVersion)
 		err := writeToml("pyproject.toml", config)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to write pyproject.toml: %v", err)
 		}
 		_, err = runCmd("git", "add", "pyproject.toml")
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to 'git add pyproject.toml': %v", err)
 		}
 		_, err = runCmd("git", "commit", "-m", fmt.Sprintf("update version to %s in pyproject.toml", newVersion))
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to commit: %v", err)
 		}
 	}
 	fmt.Printf("git tag %s\n", newVersion)
 	_, err = runCmd("git", "tag", newVersion)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to tag: %v", err)
 	}
 	githubRef := os.Getenv("GITHUB_REF")
 	branch := strings.TrimPrefix(githubRef, "refs/heads/")
 	fmt.Printf("git push --tags origin %s\n", branch)
 	_, err = runCmd("git", "push", "--tags", "origin", branch)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to push: %v", err)
 	}
 	return nil
 }
