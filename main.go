@@ -90,7 +90,7 @@ func runCmd(name string, arg ...string) (string, error) {
 	stdout := outb.String()
 	stderr := errb.String()
 	if err != nil {
-		fmt.Printf("failed to run command, got stdout:\n%s\nstderr:\n%s\n", stdout, stderr)
+		fmt.Printf("failed to run command '%s %s', got stdout:\n%s\nstderr:\n%s\n", name, strings.Join(arg, " "), stdout, stderr)
 		return "", fmt.Errorf("failed to run command: %v", err)
 	}
 	return stdout, nil
