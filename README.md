@@ -5,7 +5,7 @@ creates appropriate tags.
 
 ## Example usage
 
-```
+```yaml
 name: Updates version and tags
 on:
   push:
