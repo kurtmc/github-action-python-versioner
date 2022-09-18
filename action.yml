@@ -1,6 +1,9 @@
 # action.yml
 name: 'Python Versioner'
 description: 'Handle incremeting python package versions'
+branding:
+  icon: 'package'
+  color: 'green'
 runs:
   using: 'docker'
   image: 'Dockerfile'
